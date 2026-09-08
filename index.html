@@ -1,27 +1,152 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111827">
-<title>Task Dashboard</title>
-<style>
-:root{--bg:#f6f7fb;--panel:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb;--done:#ecfdf5;--danger:#dc2626;--shadow:0 12px 30px rgba(17,24,39,.10)}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.app{max-width:900px;margin:auto;padding:14px 12px 100px}.sticky{position:sticky;top:0;z-index:20;background:rgba(246,247,251,.92);backdrop-filter:blur(12px);padding-top:env(safe-area-inset-top)}.head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0 8px}h1{font-size:24px;margin:0;line-height:1.05}.sub{font-size:12px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:12px;padding:10px 13px;background:#111827;color:#fff;font-weight:800;cursor:pointer}.btn.secondary{background:#fff;color:#111827;border:1px solid var(--line)}.tabs{display:flex;gap:8px;overflow:auto;padding:8px 0 12px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;color:#6b7280;padding:9px 12px;border-radius:999px;font-weight:800;cursor:pointer}.tab.active{background:#111827;color:#fff;border-color:#111827}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 16px}.stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:11px}.stat b{font-size:19px;display:block}.stat span{font-size:11px;color:var(--muted)}.sectionhead{display:flex;justify-content:space-between;align-items:center;margin:15px 2px 8px}.sectionhead h2{font-size:15px;margin:0}.sectionhead span,.sectionhead button{font-size:12px;color:var(--muted)}.sectionhead button{border:0;background:none;font-weight:800;cursor:pointer}.list{display:grid;gap:8px}.task{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px}.task.done{background:var(--done);opacity:.82}.check{appearance:none;width:24px;height:24px;border:2px solid #cbd5e1;border-radius:8px;background:#fff;display:grid;place-content:center;cursor:pointer;margin-top:1px}.check:checked{background:var(--accent);border-color:var(--accent)}.check:checked::after{content:"✓";color:#fff;font-weight:900;font-size:16px}.title{font-size:15px;font-weight:850;line-height:1.3}.meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.badge{font-size:10.5px;background:#f3f4f6;color:#4b5563;padding:4px 7px;border-radius:999px}.badge.p0{background:#fee2e2;color:#991b1b}.badge.p1{background:#fef3c7;color:#92400e}.badge.today{background:#dbeafe;color:#1d4ed8}.actions{display:flex;gap:3px}.icon{border:0;background:none;padding:4px;color:#9ca3af;font-size:17px;cursor:pointer}.icon:hover{color:var(--danger)}.empty{background:#fff;border:1px dashed #d1d5db;border-radius:16px;padding:24px;text-align:center;color:var(--muted);font-size:13px}.completed{margin-top:22px}.fab{position:fixed;right:18px;bottom:max(20px,env(safe-area-inset-bottom));width:58px;height:58px;border-radius:18px;border:0;background:var(--accent);color:#fff;font-size:30px;box-shadow:var(--shadow);cursor:pointer}.modal{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:flex-end;justify-content:center;z-index:50}.modal.open{display:flex}.sheet{width:min(680px,100%);background:#fff;border-radius:24px 24px 0 0;padding:18px 18px max(18px,env(safe-area-inset-bottom));box-shadow:var(--shadow)}.sheet h3{margin:0 0 14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}label{font-size:12px;color:var(--muted);font-weight:800}input,select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;font:inherit;background:#fff}.rowbtns{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.smallnote{font-size:11px;color:var(--muted);margin-top:10px}@media(max-width:640px){.app{padding:8px 10px 90px}.head h1{font-size:21px}.desktopOnly{display:none}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.task{padding:11px}.summary{gap:6px}.stat{padding:9px}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <title>Task Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="app"><div class="sticky"><div class="head"><div><h1>Task Dashboard</h1><div class="sub">Check it off → it moves underneath automatically.</div></div><div style="display:flex;gap:7px"><button class="btn secondary desktopOnly" id="exportBtn">Export</button><button class="btn secondary desktopOnly" id="importBtn">Import</button><button class="btn" id="addTop">+ Add</button></div></div><div class="tabs" id="tabs"></div></div><div class="summary"><div class="stat"><b id="openCount">0</b><span>open</span></div><div class="stat"><b id="todayCount">0</b><span>today</span></div><div class="stat"><b id="doneCount">0</b><span>done</span></div></div><div class="sectionhead"><h2 id="viewTitle">Priority</h2><span id="viewHint">Most important first</span></div><div class="list" id="activeList"></div><div class="completed"><div class="sectionhead"><h2>Completed</h2><button id="toggleCompleted">Hide</button></div><div class="list" id="completedList"></div></div></div>
-<button class="fab" id="fab" aria-label="Add task">+</button><input type="file" id="importFile" accept="application/json" hidden>
-<div class="modal" id="modal"><div class="sheet"><h3 id="modalTitle">Add task</h3><div class="grid"><div class="field full"><label>Task</label><input id="fTitle" placeholder="What do you need to do?"></div><div class="field"><label>Priority</label><select id="fPriority"><option value="0">P0 — urgent / fixed today</option><option value="1">P1 — next / deadline soon</option><option value="2">P2 — soon</option><option value="3">P3 — flexible</option></select></div><div class="field"><label>Estimated minutes</label><input id="fMinutes" type="number" min="1" value="10"></div><div class="field"><label>Difficulty</label><select id="fDifficulty"><option value="0">Very easy</option><option value="1">Easy</option><option value="2">Medium</option><option value="3">Hard</option></select></div><div class="field"><label>Category</label><input id="fCategory" value="Other"></div><div class="field full"><label>Due / timing</label><input id="fDue" placeholder="Today, by Wednesday, flexible..."></div><div class="field full"><label style="display:flex;align-items:center;gap:8px"><input id="fToday" type="checkbox" style="width:auto">Show in Today tab</label></div></div><div class="rowbtns"><button class="btn secondary" id="cancelBtn">Cancel</button><button class="btn" id="saveBtn">Save</button></div><div class="smallnote">Your tasks stay in this browser using local storage. The public code starts empty.</div></div></div>
-<script>
-const DEFAULT_TASKS=[];const KEY="task_dashboard_v1";let state=loadState(),currentView="priority",showCompleted=true,editingId=null;const views=[["today","Today"],["priority","Priority"],["shortest","Shortest"],["easiest","Easiest"],["all","All"]];
-function loadState(){try{const v=JSON.parse(localStorage.getItem(KEY));if(v&&Array.isArray(v.tasks))return v}catch(e){}return{tasks:[]}}function saveState(){localStorage.setItem(KEY,JSON.stringify(state))}function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}function pLabel(p){return["P0 urgent","P1 next","P2 soon","P3 flexible"][p]||"P2 soon"}function dLabel(d){return["Very easy","Easy","Medium","Hard"][d]||"Easy"}
-function sortedForView(arr){let a=[...arr];if(currentView==="today")a=a.filter(t=>t.today).sort((x,y)=>x.priority-y.priority||x.minutes-y.minutes);if(currentView==="priority")a.sort((x,y)=>x.priority-y.priority||Number(y.today)-Number(x.today)||x.minutes-y.minutes);if(currentView==="shortest")a.sort((x,y)=>x.minutes-y.minutes||x.priority-y.priority||x.difficulty-y.difficulty);if(currentView==="easiest")a.sort((x,y)=>x.difficulty-y.difficulty||x.minutes-y.minutes||x.priority-y.priority);if(currentView==="all")a.sort((x,y)=>x.title.localeCompare(y.title));return a}
-function taskHTML(t){return`<div class="task ${t.done?"done":""}"><input class="check" type="checkbox" ${t.done?"checked":""} onchange="toggleDone('${t.id}')"><div><div class="title">${esc(t.title)}</div><div class="meta"><span class="badge p${t.priority}">${pLabel(t.priority)}</span><span class="badge">${t.minutes} min</span><span class="badge">${dLabel(t.difficulty)}</span><span class="badge">${esc(t.category)}</span>${t.today?'<span class="badge today">Today</span>':""}${t.due?`<span class="badge">${esc(t.due)}</span>`:""}</div></div><div class="actions"><button class="icon" title="Edit" onclick="openEdit('${t.id}')">✎</button><button class="icon" title="Delete" onclick="deleteTask('${t.id}')">×</button></div></div>`}
-function render(){tabs.innerHTML=views.map(v=>`<button class="tab ${currentView===v[0]?"active":""}" onclick="setView('${v[0]}')">${v[1]}</button>`).join("");const open=state.tasks.filter(t=>!t.done),done=state.tasks.filter(t=>t.done),active=sortedForView(open);activeList.innerHTML=active.length?active.map(taskHTML).join(""):'<div class="empty">Nothing here 🎉</div>';completedList.innerHTML=showCompleted?(done.length?sortedForView(done).map(taskHTML).join(""):'<div class="empty">Nothing completed yet.</div>'):"";openCount.textContent=open.length;todayCount.textContent=open.filter(t=>t.today).length;doneCount.textContent=done.length;const meta={today:["Today","Only tasks marked for today"],priority:["Priority","Urgent + deadline-sensitive first"],shortest:["Shortest","Fastest wins first"],easiest:["Easiest","Lowest mental effort first"],all:["All","Alphabetical"]}[currentView];viewTitle.textContent=meta[0];viewHint.textContent=meta[1]}
-function setView(v){currentView=v;render()}function toggleDone(id){const t=state.tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;saveState();render()}function deleteTask(id){const t=state.tasks.find(x=>x.id===id);if(t&&confirm(`Delete "${t.title}"?`)){state.tasks=state.tasks.filter(x=>x.id!==id);saveState();render()}}
-function openAdd(){editingId=null;modalTitle.textContent="Add task";fTitle.value="";fPriority.value="2";fMinutes.value="10";fDifficulty.value="1";fCategory.value="Other";fDue.value="";fToday.checked=false;modal.classList.add("open");setTimeout(()=>fTitle.focus(),100)}function openEdit(id){const t=state.tasks.find(x=>x.id===id);if(!t)return;editingId=id;modalTitle.textContent="Edit task";fTitle.value=t.title;fPriority.value=t.priority;fMinutes.value=t.minutes;fDifficulty.value=t.difficulty;fCategory.value=t.category;fDue.value=t.due||"";fToday.checked=!!t.today;modal.classList.add("open")}function closeModal(){modal.classList.remove("open")}function saveTask(){const title=fTitle.value.trim();if(!title)return alert("Add a task name.");const data={title,priority:+fPriority.value,minutes:Math.max(1,+fMinutes.value||10),difficulty:+fDifficulty.value,category:fCategory.value.trim()||"Other",due:fDue.value.trim(),today:fToday.checked};if(editingId)Object.assign(state.tasks.find(x=>x.id===editingId),data);else state.tasks.push({id:"t"+Date.now(),...data,done:false});saveState();closeModal();render()}
-fab.onclick=addTop.onclick=openAdd;cancelBtn.onclick=closeModal;saveBtn.onclick=saveTask;toggleCompleted.onclick=()=>{showCompleted=!showCompleted;toggleCompleted.textContent=showCompleted?"Hide":"Show";render()};exportBtn.onclick=()=>{const blob=new Blob([JSON.stringify(state.tasks,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="task-dashboard-data.json";a.click();URL.revokeObjectURL(a.href)};importBtn.onclick=()=>importFile.click();importFile.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);if(!Array.isArray(data))throw 0;state={tasks:data};saveState();render();alert("Imported.")}catch(_){alert("That JSON file is not a valid task list.")}};r.readAsText(f);e.target.value=""};modal.addEventListener("click",e=>{if(e.target===modal)closeModal()});render();
-</script>
+  <div class="app">
+    <div class="sticky">
+      <div class="head">
+        <div>
+          <h1>Task Dashboard</h1>
+          <div class="sub" id="clockLine">Time-aware priorities and progress tracking.</div>
+        </div>
+        <div class="head-actions">
+          <button class="btn secondary desktopOnly" id="exportBtn" type="button">Export</button>
+          <button class="btn secondary desktopOnly" id="importBtn" type="button">Import</button>
+          <button class="btn" id="addTop" type="button">+ Add</button>
+        </div>
+      </div>
+
+      <div class="tabs" id="tabs"></div>
+
+      <div id="topicFilterWrap" class="topic-filter" hidden>
+        <select id="topicFilter" aria-label="Filter by section">
+          <option value="all">All sections</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="stat"><b id="openCount">0</b><span>open</span></div>
+      <div class="stat"><b id="todayCount">0</b><span>due now/today</span></div>
+      <div class="stat"><b id="focusCount">0</b><span>high priority</span></div>
+      <div class="stat"><b id="doneCount">0</b><span>done &lt;24h</span></div>
+    </div>
+
+    <div class="progressWrap">
+      <div class="progressTop"><span>Current progress</span><span id="progressText">0%</span></div>
+      <div class="progressTrack"><div class="progressBar" id="progressBar"></div></div>
+    </div>
+
+    <div id="migrationStatus" class="smallnote migration-status" hidden></div>
+
+    <section class="focusPanel" id="focusPanel">
+      <div class="focusHead">
+        <div>
+          <h2>High Priority</h2>
+          <div class="focusNote">Overdue and due-today items move here automatically. Pull in the next five when ready.</div>
+        </div>
+        <button class="btn accent" id="nextFiveBtn" type="button">Move next 5 here</button>
+      </div>
+      <div class="list" id="focusList"></div>
+    </section>
+
+    <div class="sectionhead">
+      <h2 id="viewTitle">Priority</h2>
+      <span id="viewHint">Time-aware order</span>
+    </div>
+    <div class="list" id="activeList"></div>
+
+    <section class="completed" id="recentCompletedPanel">
+      <div class="sectionhead">
+        <h2>Recently completed <span class="muted-weight">(last 24h)</span></h2>
+        <button id="toggleCompleted" type="button">Hide</button>
+      </div>
+      <div class="list" id="completedList"></div>
+    </section>
+  </div>
+
+  <button class="fab" id="fab" type="button" aria-label="Add task">+</button>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Add task</h3>
+      <div class="grid">
+        <div class="field full">
+          <label for="fTitle">Task</label>
+          <input id="fTitle" placeholder="What do you need to do?">
+        </div>
+
+        <div class="field">
+          <label for="fPriority">Priority</label>
+          <select id="fPriority">
+            <option value="0">P0 — urgent</option>
+            <option value="1">P1 — next</option>
+            <option value="2" selected>P2 — soon</option>
+            <option value="3">P3 — flexible</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="fMinutes">Estimated minutes</label>
+          <input id="fMinutes" type="number" min="1" max="1440" value="10">
+        </div>
+
+        <div class="field">
+          <label for="fDifficulty">Difficulty</label>
+          <select id="fDifficulty">
+            <option value="0">Very easy</option>
+            <option value="1" selected>Easy</option>
+            <option value="2">Medium</option>
+            <option value="3">Hard</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="fCategory">Topic / Section</label>
+          <select id="fCategory"></select>
+        </div>
+
+        <div class="field" id="customCategoryWrap" hidden>
+          <label for="fCustomCategory">New custom section</label>
+          <input id="fCustomCategory" maxlength="40" placeholder="e.g. Side Project">
+        </div>
+
+        <div class="field">
+          <label for="fDueDate">Due date</label>
+          <input id="fDueDate" type="date">
+        </div>
+
+        <div class="field">
+          <label for="fDueTime">Due time (optional)</label>
+          <input id="fDueTime" type="time">
+        </div>
+
+        <div class="field full">
+          <label for="fDue">Timing note</label>
+          <input id="fDue" placeholder="Soon, before class, flexible...">
+        </div>
+
+        <div class="field full">
+          <label class="check-label"><input id="fToday" type="checkbox"> Pin to Today tab</label>
+        </div>
+      </div>
+
+      <div class="rowbtns">
+        <button class="btn secondary" id="cancelBtn" type="button">Cancel</button>
+        <button class="btn" id="saveBtn" type="button">Save</button>
+      </div>
+
+      <div class="smallnote">Data stays in this browser using IndexedDB with localStorage fallback. This public repository ships with zero task data.</div>
+    </div>
+  </div>
+
+  <input id="importFile" type="file" accept=".json,application/json" hidden>
+  <script src="app.js"></script>
 </body>
 </html>
